@@ -1,10 +1,10 @@
 #
 # FileName : ProjectAndGroup.psm1
-# Data     : 02/09/2018
-# Purpose  : this module will create a project and groups for a project
+# Data     : 05/02/2022
+# Purpose  : this module will copy a work item type
 #           This script is for demonstration only not to be used as production code
 #
-# last update 12/04/2020
+# last update 05/02/2022
 
 function GetVSTSCredential () {
     Param(
