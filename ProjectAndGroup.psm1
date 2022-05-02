@@ -469,15 +469,6 @@ function Copy-ProcessAndWorkItemType()
 
         } # page exists
        
-
     }
-
-   
-   
-    $pages = 1
-   
-  
-    
-    # 
 
 }
