@@ -4,7 +4,7 @@ The point of this script is that there is no way in the current UI to copy a wor
 
 
 
- INPUTS:
+ INPUTS:</br>
           userParams - Projectdef.json file with parameters used by the script.
           InheritedProcessName - The process to copy work item type from
           DestinationProcess   - Name of the process to copy the new work item type to
