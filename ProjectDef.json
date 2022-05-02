@@ -1,6 +1,6 @@
 { 
-    "VSTSMasterAcct" : "",
-    "userEmail"      : "",
-    "PAT"            : "",
+    "VSTSMasterAcct" : "Add your ADO Organization name here",
+    "userEmail"      : "Add user email here",
+    "PAT"            : "Add PAT token here",
     "HTTP_preFix"    : "https"
 }
