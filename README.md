@@ -1,4 +1,4 @@
-# copyWorkItemType
+# Copy Work Item Type
 Copy a work item type using the Azure DevOps API's. This script will copy an existing work item type from one process into another or the same process.
 The point of this script is that there is no way in the current UI to copy a work item type within a process. You can copy the whole process, but not individual work item types. This script allows you to copy just the work item type.
 
