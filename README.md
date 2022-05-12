@@ -18,9 +18,12 @@ Additional inputs:</br>
         "PAT"             - Personal Access token in order to have permission to copy.</br>
         "HTTP_preFix"    : "https"</br>
 </br>
-So, let’s start with the hierarchy. Everything in ADO has a hierarchy. Processes are derived from the four standard processes: Agile, Scrum, CMMI and Basic. You cannot create a new process, but you can inherit from one of the four to create your process. Once you create the process you will have work item types that come standard with each process. For example, if you inherit from an Agile process your new process will have the following work item types: Epic, Features, User Stories, Bug, Tasks, and Issues. I may have left ones out, but you get the idea. Now the fun starts. So, you create a new work item type to handle your specific business needs, but another team wants to do something similar. Now you must copy each field, each page, etc.  
 
-What I will outline is how to do this copy just using the API’s and not having to hand copy each field. We will assume for this discussion that you already have the process and the work item type you want to copy. We also assume the new work item type does not already exist. Modifying an existing work item type to add any missing fields is possible, but I found it much easier to start from scratch. You can easily modify this code to loop through an existing work item, but I choose to do it this way. </br>
+Lets run through the process and you can see what I was thinking:
+
+   First,Everything in ADO has a hierarchy. Processes are derived from the four standard processes: Agile, Scrum, CMMI and Basic. You cannot create a new process, but you can inherit from one of the four to create your process. Once you create the process you will have work item types that come standard with each process. For example, if you inherit from an Agile process your new process will have the following work item types: Epic, Features, User Stories, Bug, Tasks, and Issues. I may have left ones out, but you get the idea. Now the fun starts. So, you create a new work item type to handle your specific business needs, but another team wants to do something similar. Now you must copy each field, each page, etc.  
+
+  What I will outline is how to do this copy just using the API’s and not having to hand copy each field. We will assume for this discussion that you already have the process and the work item type you want to copy. We also assume the new work item type does not already exist. Modifying an existing work item type to add any missing fields is possible, but I found it much easier to start from scratch. You can easily modify this code to loop through an existing work item, but I choose to do it this way. </br>
 
 </br>
 
@@ -93,7 +96,9 @@ This is how the code is structured. I thought it may be good to understand the f
         }
     }
 
-This will give you the basic Work Item type with the states added from the work item target. Once the work item type is created by default it will have one page and four sections. From Left to right the first three sections reflect the three columns on the page. I have yet to figure out what the fourth section is for, but maybe in the next blog we can visit that. Suffice to say we only need to be concerned with the first three sections. 
+This will give you the basic Work Item type with the states added from the work item target. Once the work item type is created by default it will have one page and four sections. 
+
+From Left to right the first three sections reflect the three columns on the page. I have yet to figure out what the fourth section is for, but maybe in the next blog we can visit that. Suffice to say we only need to be concerned with the first three sections. 
 
 Here is the code to add the pages to the new work item type. By adding the work item types it makes it somewhat easier to add the fields. 
 You just look through each page in the layout and add the fields.
@@ -137,8 +142,6 @@ Well, it’s not really just that easy. There are a few undocumented pieces of t
 
 The way I structured this function I get the work item type to copy from and loop through each page, each section on each page and each control in each section. The Description field will show up as the first group in the first section. Yes, I know it’s not in a group, but the pages on the work item are structured in a way that everything is in a group. This was the biggest revelation and the hardest to discover. The reason is when you look at the UI the description field does not have a group. So the real issue here is that it’s a multi-line text box (HTML). ADO handles them in a different way. 
 
-Now that we know these fields need to be handled differently it ‘s just a matter of figuring out how.
-
 The System.Description field is the easiest of the two to deal with. Here all you need to do is edit the group its associated with and update the label and visibility. You need only to grab the id of the group and create a request with the id, label, and visibility as shown below. A few things to note here in the code. First the label field you noticed I removed the leading and trailing blanks. 
 
 If you don’t the request fails. This is not in any of the documentation, I found it because one of my fields had a trailing blank. Second, the visibility field  or any field that is either True, False, or Null must be encapsulated in quotes. Without the quotes, PowerShell give it a value of $true instead of “True”. This only took a few failed calls to figure out the request was wrong. Be careful the error messages from the API do not always point to the problem.
@@ -162,7 +165,7 @@ If you don’t the request fails. This is not in any of the documentation, I fou
       }
 
 
-Ok that one was easy. How about the multi-line text box somewhere else on the page? Now that is where we start to lose our hair and go gray. Again, remember everything needs to be in a group, but this field is not in a group when you look at it in the UI. So after a few hours digging through fiddler traffic I was able to find what was not documented regarding multi-line text fields. 
+How about the multi-line text box somewhere else on the page? Again, remember everything needs to be in a group, but this field is not in a group when you look at it in the UI. So after a few hours digging through fiddler traffic I was able to find what was not documented regarding multi-line text fields. 
 
 You must create a group and add the multi-line field as a control in the group.  This was the piece of the puzzle I was missing. I found the request that was being sent when a multi-line field got placed on the page and was able to figure out what they were going.  Now granted the documentation on adding a group does show that a control can be part of the request, but it doesn’t specify that multi-line text fields are a special case. 
 
@@ -269,4 +272,6 @@ The request is shown below. Note that you must add an Id to the control that’s
                                             }
 
 The other field type to watch out for is a Boolean field. The key here is it must include a default value. If you omit the default value, it will not add to the page. The way I got around this was always including the default value and if the field type was Boolean, I set it to False. If it was not Boolean, I set it to a blank string and that seems to work.
-Azure DevOps is a powerful tool and the API’s give you the ability to do some very interesting things. Unfortunately, not everything in the API’s is documented so it requires some perseverance and some time luck to find what you need.  We started this article with the good news and bad news. I hope I was able to help you understand the bad news. The Azure DevOps API’s are awesome, but they just lack some clarity in the nuances of some specific cases. Unfortunately those cases are the difference between things working and not, but hey no one is perfect, but I still believe these API’s are the most powerful tools when it comes to enhancing Azure DevOps.
+
+  Azure DevOps is a powerful tool and the API’s give you the ability to do some very interesting things. Unfortunately, not everything in the API’s is documented so it requires some perseverance and some time luck to find what you need.  I hope I was able to help you understand the process. The Azure DevOps API’s are awesome, but they just lack some clarity in the nuances of some specific cases.
+  Unfortunately those cases are the difference between things working and not, but hey no one is perfect, but I still believe these API’s are the most powerful tools when it comes to enhancing Azure DevOps.
