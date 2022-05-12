@@ -17,14 +17,18 @@ Additional inputs:</br>
         "userEmail"       - The email of the user</br>
         "PAT"             - Personal Access token in order to have permission to copy.</br>
         "HTTP_preFix"    : "https"</br>
-So, let’s start with the hierarchy. Everything in ADO has a hierarchy. Processes are derived from the four standard processes: Agile, Scrum, CMMI and Basic. You cannot create a new process, but you can inherit from one of the four to create your process. Once you create the process you will have work item types that come standard with each process. For example, if you inherit from an Agile process your new process will have the following work item types: Epic, Features, User Stories, Bug, Tasks, and Issues. I may have left ones out, but you get the idea. Now the fun starts. So, you create a new work item type to handle your specific business needs, but another team wants to do something similar. Now you must copy each field, each page, etc.   What I will outline is how to do this copy just using the API’s and not having to hand copy each field. We will assume for this discussion that you already have the process and the work item type you want to copy. We also assume the new work item type does not already exist. Modifying an existing work item type to add any missing fields is possible, but I found it much easier to start from scratch. You can easily modify this code to loop through an existing work item, but I choose to do it this way. 
-The steps we will follow are:
-•	Create new work item type
-•	Create pages for new work item type by looping through target work item type and adding missing pages
-•	Create stages for new work item type
-•	Loop through each page in target work item type
-o	Loop through each section in each page
-	Loop thru each group in each section
+</br>
+So, let’s start with the hierarchy. Everything in ADO has a hierarchy. Processes are derived from the four standard processes: Agile, Scrum, CMMI and Basic. You cannot create a new process, but you can inherit from one of the four to create your process. Once you create the process you will have work item types that come standard with each process. For example, if you inherit from an Agile process your new process will have the following work item types: Epic, Features, User Stories, Bug, Tasks, and Issues. I may have left ones out, but you get the idea. Now the fun starts. So, you create a new work item type to handle your specific business needs, but another team wants to do something similar. Now you must copy each field, each page, etc.   What I will outline is how to do this copy just using the API’s and not having to hand copy each field. We will assume for this discussion that you already have the process and the work item type you want to copy. We also assume the new work item type does not already exist. Modifying an existing work item type to add any missing fields is possible, but I found it much easier to start from scratch. You can easily modify this code to loop through an existing work item, but I choose to do it this way. </br>
+
+</br>
+
+<lu>The steps we will follow are:
+ <li>•	Create new work item type</li>
+<li>•	Create pages for new work item type by looping through target work item type and adding missing pages</li>
+ <li>•	Create stages for new work item type</li>
+ <li>•	Loop through each page in target work item type</li>
+ <li>o	Loop through each section in each page</li>
+ <li>	Loop thru each group in each section</li>
 •	Loop through each control in each group
 o	Add field to new work item type (a control holds only 1 field from what I have seen)
 o	Add group to given section
