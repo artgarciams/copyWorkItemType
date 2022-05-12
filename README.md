@@ -28,7 +28,7 @@ So, let’s start with the hierarchy. Everything in ADO has a hierarchy. Process
  <li>Create stages for new work item type</li>
  <li>Loop through each page in target work item type</li>
  <dd>-Loop through each section in each page</dd>
- <dd>-Loop thru each group in each section</dd>>
+ <dd>-Loop thru each group in each section</dd>
  <dd>-Loop through each control in each group</dd>
  <dd>-Add field to new work item type (a control holds only 1 field from what I have seen)</dd>
  <dd>-Add group to given section</dd>
