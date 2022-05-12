@@ -27,12 +27,12 @@ So, let’s start with the hierarchy. Everything in ADO has a hierarchy. Process
  <li>Create pages for new work item type by looping through target work item type and adding missing pages</li>
  <li>Create stages for new work item type</li>
  <li>Loop through each page in target work item type</li>
- <dd>-Loop through each section in each page</dd>
- <dd>-Loop thru each group in each section</dd>
- <dd>-Loop through each control in each group</dd>
- <dd>-Add field to new work item type (a control holds only 1 field from what I have seen)</dd>
- <dd>-Add group to given section</dd>
- <dd>-Add control to given group</dd>
+       <dd>-Loop through each section in each page</dd>
+       <dd>-Loop thru each group in each section</dd>
+       <dd>-Loop through each control in each group</dd>
+       <dd>-Add field to new work item type (a control holds only 1 field from what I have seen)</dd>
+             <dd>-Add group to given section</dd>
+             <dd>-Add control to given group</dd>
 </lu>
 This is how the code is structured. I thought it may be good to understand the flow before diving into the code. Now that we have that out of the way let’s start with adding the new work item type.
 Once the new work item type is created you then need to add the stages from the work item you are copying from.
