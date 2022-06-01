@@ -131,5 +131,7 @@ There are a few other controls you need to deal with. First id the control exten
           
 The other field type to watch out for is a Boolean field. The key here is it must include a default value. If you omit the default value, it will not be added to the page. The way I got around this was always including the default value and if the field type was Boolean, I set it equal False. If it was not Boolean, I set it to a blank string and that seems to work.
 
-I have shown you how you can take an existing work item type and make a copy in the same process. This should work if you want to create a new work item in another process as well. The source for this and a few other things I have done with the API’s is listed on my [GitHub account](). I hope this helps clear up some of the confusion around copying work item types and that this was in some way helpful. If you have any questions, please feel free to reach out arthur.garcia@microsoft.com 
+I have shown you how you can take an existing work item type and make a copy in the same process. This should work if you want to create a new work item in another process as well. The source for this is listed on my [GitHub account](https://github.com/artgarciams/copyWorkItemType). 
+
+I hope this helps clear up some of the confusion around copying work item types and that this was in some way helpful. If you have any questions, please feel free to reach out arthur.garcia@microsoft.com 
 Thanks, and happy coding
