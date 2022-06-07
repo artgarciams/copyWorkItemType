@@ -176,6 +176,9 @@ function Copy-ProcessAndWorkItemType()
     $AllFields = Invoke-RestMethod -Uri $AllFieldsUrl -Method Get -Headers $authorization
     Write-Host $AllFields
 
+    $fldCOntrib = $AllFields.value | Where-Object {$_.isContribution -eq "True" }
+
+    
     # loop thru layout to copy and add pages  to new layout if they dont exist
     foreach ($Curritem in $WorkItemType.layout.pages) 
     {      
@@ -233,6 +236,7 @@ function Copy-ProcessAndWorkItemType()
                             # loop thru each group in inherited page and add any group that does not exist
                             foreach ($grp in $currSection.groups) 
                             {
+                                    $added = "$false"
                                     # special case if we rename system.description need to handle it this way
                                     $newGrp = $null
                                     $isMultiLine = $false
@@ -308,6 +312,7 @@ function Copy-ProcessAndWorkItemType()
                                             $newGrp = $group
 
                                         }
+                                      
                                     }     
 
                                     # if group does not exist add it
@@ -329,15 +334,52 @@ function Copy-ProcessAndWorkItemType()
 
                                         foreach ($grpCtl in $grp.controls) 
                                         {
+                                            $added = "$false"
                                             $fld = $AllFields.value | Where-Object {$_.referenceName -eq $grpCtl.id }
                                             if($fld.type -eq "html")
                                             {
                                                 Write-Host $fld
                                             }
+                                            
+                                            # url contribution control - need to set added to true so code will not try to add field or control again
+                                            # url control has to be added as a control to the group, not like others that need field added first
+                                            # adding url contribution field is not documented. found request by using fiddler
+                                            if($grpCtl.contribution.contributionId -like "*url-field")
+                                            {
+                                                $addCtl = @{
+                                                    contributionId = $grpCtl.contribution.contributionId
+                                                    isContribution =  if($grpCtl.isContribution -eq $true){"$true"}else {"$false"}  
+                                                    height = "$null"
+                                                    label = $grpCtl.label.Trim()
+                                                    metadata = "$null"
+                                                    order = "$null"
+                                                    overridden = "$null"
+                                                    controlType = "$null"
+                                                    readOnly = if($grpCtl.readOnly -eq $true){"$true"}else {"$false"}   
+                                                    visible = if($grpCtl.visible -eq $true){"$true"}else {"$false"}   
+                                                    watermark = "$null"
+                                                    contribution = @{
+                                                        contributionId = $grpCtl.contribution.contributionId
+                                                        inputs = @{
+                                                            HideUrlIfEmptyField = $grpCtl.contribution.inputs.HideUrlIfEmptyField
+                                                            Title = $grpCtl.contribution.inputs.Title
+                                                            Url = $grpCtl.contribution.inputs.Url                                                            
+                                                        }
+                                                    }
+                                                }
+                                                $ctlJSON = ConvertTo-Json -InputObject $addCtl
+                                                # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/controls/create?view=azure-devops-rest-7.1
+                                                # POST https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/groups/{groupId}/controls?api-version=7.1-preview.1
+                                                $controlURL = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + "/workitemtypes/" + $newWKItem.referenceName + "/layout/groups/" + $group.id + "/controls?api-version=7.1-preview.1"    
+                                                $control = Invoke-RestMethod -Uri $controlURL -Method Post -ContentType "application/json" -Headers $authorization -Body $ctlJSON
+                                                Write-Host $control
+                                                $added = "$true"
+                                            }
 
                                             # add controls to group 
-                                            if($grpCtl.isContribution -eq $true)
+                                            if($grpCtl.isContribution -eq $true )
                                             {
+                                               
                                                 $addCtl = @{  
                                                     referenceName = $grpCtl.contribution.inputs.FieldName                                                    
                                                     order = "$null"
@@ -373,13 +415,16 @@ function Copy-ProcessAndWorkItemType()
                                             }
                                             $ctlJSON = ConvertTo-Json -InputObject $addCtl
 
-                                            # add field to work item type
-                                            # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/fields/add?view=azure-devops-rest-7.1
-                                            # POST https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/fields?api-version=7.1-preview.2
-                                            $field = $null
-                                            $fieldURL = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + "/workitemTypes/" + $newWKItem.referenceName + "/fields?api-version=7.1-preview.2"
-                                            $field = Invoke-RestMethod -Uri $fieldURL -Method Post -ContentType "application/json" -Headers $authorization -Body $ctlJSON
-                                            Write-Host $field
+                                            if ($added -eq "$false")
+                                            {
+                                                # add field to work item type
+                                                # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/fields/add?view=azure-devops-rest-7.1
+                                                # POST https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/fields?api-version=7.1-preview.2
+                                                $field = $null
+                                                $fieldURL = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + "/workitemTypes/" + $newWKItem.referenceName + "/fields?api-version=7.1-preview.2"
+                                                $field = Invoke-RestMethod -Uri $fieldURL -Method Post -ContentType "application/json" -Headers $authorization -Body $ctlJSON
+                                                Write-Host $field
+                                            }
 
                                             # add control to group. add the field to the control
                                             if($grpCtl.isContribution -eq $true)
@@ -426,12 +471,16 @@ function Copy-ProcessAndWorkItemType()
                                                 }
                                             }
 
-                                            $ctlJSON = ConvertTo-Json -InputObject $addCtl
-                                            # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/controls/create?view=azure-devops-rest-7.1
-                                            # POST https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/groups/{groupId}/controls?api-version=7.1-preview.1
-                                            $controlURL = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + "/workitemtypes/" + $newWKItem.referenceName + "/layout/groups/" + $group.id + "/controls?api-version=7.1-preview.1"    
-                                            $control = Invoke-RestMethod -Uri $controlURL -Method Post -ContentType "application/json" -Headers $authorization -Body $ctlJSON
-                                            Write-Host $control
+                                            IF($added -eq "$false")
+                                            {
+                                                $ctlJSON = ConvertTo-Json -InputObject $addCtl
+                                                # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/controls/create?view=azure-devops-rest-7.1
+                                                # POST https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workItemTypes/{witRefName}/layout/groups/{groupId}/controls?api-version=7.1-preview.1
+                                                $controlURL = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + "/workitemtypes/" + $newWKItem.referenceName + "/layout/groups/" + $group.id + "/controls?api-version=7.1-preview.1"    
+                                                $control = Invoke-RestMethod -Uri $controlURL -Method Post -ContentType "application/json" -Headers $authorization -Body $ctlJSON
+                                                Write-Host $control
+                                               
+                                            }
                                         }
                                     
                                     }                                    
