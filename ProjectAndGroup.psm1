@@ -455,7 +455,7 @@ function Copy-ProcessAndWorkItemType()
                                                     }
                                                 }
                                             }
-                                            else
+                                            else 
                                             {
                                                 $addCtl = @{
                                                     id = $grpCtl.id
