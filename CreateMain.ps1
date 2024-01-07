@@ -4,6 +4,7 @@
 # Author    : Arthur A. Garcia
 # Purpose   : This script will create a copy of a work item type from a given process
 #             It will take the process and work item type to copy from and process and work item type to copy to as inputs
+# Usage     : Change the parameters below the INPUTS section, then run this script '.\CreateMain.ps1'
 
 
 #import modules
@@ -18,10 +19,14 @@ Write-Output $userParameters.VSTSMasterAcct
 
 #
 # INPUTS:
-#          userParams - Projectdef.json file with parameters used by the script.
+#          userParams           - Projectdef.json file with parameters used by the script.
 #          InheritedProcessName - The process to copy work item type from
 #          DestinationProcess   - Name of the process to copy the new work item type to
-#          NewWorkItemName      - Name of the work item type to copy from
-#          WorkItemToCopy       - Name of work item type to copy to
+#          WorkItemCopyFrom     - Name of the work item type to copy from
+#          NewWorkItemName      - Name of work item type to copy to
 #
-Copy-ProcessAndWorkItemType -userParams $userParameters -InheritedProcessName "Opportunity Tracking - Master" -DestinationProcess "Opportunity Tracking - Master" -NewWorkItemName "Test Opportunity" -WorkItemToCopy "Government opportunity"
+Copy-ProcessAndWorkItemType -userParams $userParameters `
+                            -InheritedProcessName "Opportunity Tracking - Master" `
+                            -DestinationProcess   "Opportunity Tracking - Master" `
+                            -WorkItemCopyFrom     "Test Opportunity" `
+                            -NewWorkItemName      "Government opportunity"
