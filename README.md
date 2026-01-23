@@ -275,3 +275,17 @@ The other field type to watch out for is a Boolean field. The key here is it mus
 
   Azure DevOps is a powerful tool and the API’s give you the ability to do some very interesting things. Unfortunately, not everything in the API’s is documented so it requires some perseverance and some time luck to find what you need.  I hope I was able to help you understand the process. The Azure DevOps API’s are awesome, but they just lack some clarity in the nuances of some specific cases.
   Unfortunately those cases are the difference between things working and not, but hey no one is perfect, but I still believe these API’s are the most powerful tools when it comes to enhancing Azure DevOps.
+
+
+
+
+  ------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Copyright © 2026 Arthur A Garcia
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the “Software”), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
+
+
