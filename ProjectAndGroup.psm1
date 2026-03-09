@@ -32,7 +32,7 @@ function Copy-ProcessAndWorkItemType()
         $WorkItemCopyFrom,
 
         [Parameter(Mandatory = $true)]      
-        $WorkItemToCopy
+        $NewWorkItemName
 
     )
 
@@ -71,7 +71,7 @@ function Copy-ProcessAndWorkItemType()
     # GET https://dev.azure.com/{organization}/_apis/work/processes/{processId}/workitemtypes?api-version=7.1-preview.2
     $findWkProcessUrl = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId + "/workitemtypes" + '?$expand=layout&api-version=7.1-preview.2' 
     $findWkProcess = Invoke-RestMethod -Uri $findWkProcessUrl -Method Get -Headers $authorization 
-    $newWKItem = $findWkProcess.value | Where-Object {$_.name -eq $WorkItemToCopy}
+    $newWKItem = $findWkProcess.value | Where-Object {$_.name -eq $NewWorkItemName}
 
     # get work item types to inherit from
     # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/work-item-types/list?view=azure-devops-rest-7.1
@@ -90,7 +90,7 @@ function Copy-ProcessAndWorkItemType()
             color = "f6546a"
             icon = "icon_airplane"
             description = "my first powershell induced workitem type"
-            name = $WorkItemToCopy
+            name = $NewWorkItemName
             isDisabled = $false       
         }
         # add work item
@@ -101,7 +101,7 @@ function Copy-ProcessAndWorkItemType()
         # not get list of all work items including the one we added
         $AllWorkItemTypeUrl = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + '/workitemtypes?$expand=layout&api-version=7.1-preview.2'      
         $newWKItemList = Invoke-RestMethod -Uri $AllWorkItemTypeUrl -Method Get -Headers $authorization
-        $newWKItem =  $newWKItemList.value | Where-Object {$_.name -eq $WorkItemToCopy}
+        $newWKItem =  $newWKItemList.value | Where-Object {$_.name -eq $NewWorkItemName}
 
         # get states of work item to copy. this will be used to add states to new work item
         # https://docs.microsoft.com/en-us/rest/api/azure/devops/processes/states/list?view=azure-devops-rest-7.1
@@ -206,7 +206,7 @@ function Copy-ProcessAndWorkItemType()
     # refresh pages in new work item. when new process is created it has default pages. after we add pages need to get work item type again to get all new pages
     $AllWorkItemTypeUrl = $userParams.HTTP_preFix + "://dev.azure.com/" + $userParams.VSTSMasterAcct + "/_apis/work/processes/" + $proc.typeId  + '/workitemtypes?$expand=layout&api-version=7.1-preview.2'      
     $newWKItemList = Invoke-RestMethod -Uri $AllWorkItemTypeUrl -Method Get -Headers $authorization
-    $newWKItem =  $newWKItemList.value | Where-Object {$_.name -eq $WorkItemToCopy}
+    $newWKItem =  $newWKItemList.value | Where-Object {$_.name -eq $NewWorkItemName}
 
     # get pages from new work item type. needed to add groups to page.
     # each page has 4 sections that arte created on page creation.they are situated left to right on page. section 4 i believe is hidden( not sure yet)
